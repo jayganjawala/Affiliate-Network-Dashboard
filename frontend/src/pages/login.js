@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../assets/Auth.css";
+import { toast } from "react-hot-toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
@@ -30,9 +31,10 @@ const Login = ({ setAuth }) => {
 
     try {
       await axios.post(`${API_BASE_URL}/sendOtp`, { phone });
+      toast.success("OTP sent successfully");
       setStep("otp");
     } catch (err) {
-      setError(err.response?.data?.error || "Failed to send OTP");
+      toast.error(err.response?.data?.error || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -52,9 +54,10 @@ const Login = ({ setAuth }) => {
       Cookies.set("dashboardtoken", data.token, { expires: 1 });
       Cookies.set("dashboardphone", phone, { expires: 1 });
       setAuth(true);
+      toast.success("Logged in successfully");
       navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.error || "Invalid OTP");
+       toast.error(err.response?.data?.error || "Invalid OTP");
     } finally {
       setLoading(false);
     }

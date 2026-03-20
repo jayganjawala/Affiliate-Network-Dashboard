@@ -4,6 +4,7 @@ import Papa from "papaparse";
 import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
+import { toast } from "react-hot-toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
@@ -23,10 +24,6 @@ function UploadLeads() {
   const [approvedData, setApprovedData] = useState([]);
   const [duplicateData, setDuplicateData] = useState([]);
   const [filter, setFilter] = useState("approved"); // approved | duplicate
-
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
 
   useEffect(() => {
     setCurrentPage(1);
@@ -60,16 +57,12 @@ function UploadLeads() {
 
   const handleUpload = () => {
     if (!file) {
-      setToastType("danger");
-      setToastMessage("Please select a CSV file first");
-      setShowToast(true);
+      toast.error("Please select a CSV file first");
       return;
     }
 
     if (!phone || !token) {
-      setToastType("danger");
-      setToastMessage("Authentication missing. Please login again.");
-      setShowToast(true);
+      toast.error("Authentication missing. Please login again.");
       return;
     }
 
@@ -92,7 +85,9 @@ function UploadLeads() {
             }));
 
           if (leads.length === 0) {
-            throw new Error("No valid leads found in CSV");
+            toast.error("No valid leads found in CSV");
+            setUploadStatus("error");
+            return;
           }
 
           const response = await uploadLeadsToServer(leads);
@@ -109,26 +104,20 @@ function UploadLeads() {
           setDuplicateData(data.duplicateLeads || []);
 
           setUploadStatus("success");
-          setToastType("success");
-          setToastMessage(
+          toast.success(
             `Upload complete: ${data.inserted} approved, ${data.duplicates} duplicate(s)`,
           );
-          setShowToast(true);
         } catch (err) {
           console.error(err);
           setUploadStatus("error");
-          setToastType("danger");
-          setToastMessage(
+          toast.error(
             err.response?.data?.error || err.message || "Upload failed",
           );
-          setShowToast(true);
         }
       },
       error: () => {
         setUploadStatus("error");
-        setToastType("danger");
-        setToastMessage("Failed to parse CSV file");
-        setShowToast(true);
+        toast.error("Failed to parse CSV file");
       },
     });
   };
@@ -443,27 +432,6 @@ function UploadLeads() {
             )}
           </>
         )}
-
-        {/* Toast Message */}
-        <div className="toast-container position-fixed top-0 end-0 p-3">
-          <div
-            className={`toast align-items-center text-bg-${toastType} ${
-              showToast ? "show" : ""
-            }`}
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="d-flex">
-              <div className="toast-body">{toastMessage}</div>
-              <button
-                type="button"
-                className="btn-close btn-close-white me-2 m-auto"
-                onClick={() => setShowToast(false)}
-              ></button>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

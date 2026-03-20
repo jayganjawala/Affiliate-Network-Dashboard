@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
+import { toast } from "react-hot-toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
@@ -21,10 +22,6 @@ function Payment() {
   const [method, setMethod] = useState("upi");
 
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
-
   // Filters
   const [search, setSearch] = useState("");
   const [txnSearch, setTxnSearch] = useState("");
@@ -51,10 +48,7 @@ function Payment() {
           setPayments(res.data?.payments);
           setWalletBalance(res.data?.employee?.totalBalance);
         } else {
-          setToastType("danger");
-          setToastMessage(res.data.error || "Failed to fetch payments");
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 4000);
+          toast.error(res.data.error || "Failed to fetch payments");
         }
       } catch (err) {
         console.error("Payments fetch error:", err);
@@ -85,10 +79,7 @@ function Payment() {
   const handleNext = () => {
     const error = validateAmount();
     if (error) {
-      setToastType("danger");
-      setToastMessage(error);
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 4000);
+      toast.error(error);
       return;
     }
     setStep(2);
@@ -99,19 +90,15 @@ function Payment() {
     setTimeout(() => {
       const success = Math.random() > 0.2;
       if (success) {
-        setToastType("success");
-        setToastMessage(
+        toast.success(
           `Withdraw Amount: ₹${amount} requested (Ref: WD${Date.now().toString().slice(-6)})`,
         );
       } else {
-        setToastType("danger");
-        setToastMessage("Withdrawal request failed. Please try again.");
+        toast.error("Withdrawal request failed. Please try again.");
       }
-      setShowToast(true);
       setLoading(false);
       setShowModal(false);
       resetWithdrawForm();
-      setTimeout(() => setShowToast(false), 5000);
     }, 1800);
   };
 
@@ -554,25 +541,6 @@ function Payment() {
             <div className="modal-backdrop fade show"></div>
           </>
         )}
-
-        {/* Toast */}
-        <div className="toast-container position-fixed top-0 end-0 p-3">
-          <div
-            className={`toast align-items-center text-bg-${toastType} ${showToast ? "show" : ""}`}
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="d-flex">
-              <div className="toast-body">{toastMessage}</div>
-              <button
-                type="button"
-                className="btn-close btn-close-white me-2 m-auto"
-                onClick={() => setShowToast(false)}
-              ></button>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

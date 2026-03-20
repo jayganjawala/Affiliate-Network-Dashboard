@@ -18,6 +18,8 @@ import LeadHistory from "./pages/LeadHistory";
 import Overview from "./pages/Overview";
 import ProtectedLayout from "./layouts/ProtectedLayout";
 
+import Toast from "./components/Toast";
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => !!Cookies.get("dashboardtoken"),
@@ -35,6 +37,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Toast />
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Login setAuth={setIsAuthenticated} />} />
@@ -93,7 +96,6 @@ function App() {
               isAuthenticated ? <Overview /> : <Navigate to="/" replace />
             }
           />
-
         </Route>
 
         <Route path="*" element={<div>404 - Page not found</div>} />

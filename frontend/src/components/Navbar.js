@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { toast } from "react-hot-toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
@@ -26,14 +27,15 @@ function Navbar({ onLogoutClick }) {
         },
       );
 
-      Cookies.remove("token");
-      Cookies.remove("phone");
+      Cookies.remove("dashboardtoken");
+      Cookies.remove("dashboardphone");
+      toast.success("Logged out successfully!");
       navigate("/", { replace: true });
     } catch (error) {
       console.error("Logout error:", error);
       const message =
         error.response?.data?.error || error.message || "Logout failed";
-      alert(`Failed to logout: ${message}`);
+      toast.error(`Failed to logout: ${message}`);
     } finally {
       setLoading(false);
       setShowLogoutModal(false);

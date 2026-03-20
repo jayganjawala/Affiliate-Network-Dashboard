@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
@@ -17,11 +18,6 @@ function MyProfile() {
     communicator: { name: "", phone: "", commissionrate: "" },
     organization: { name: "", address: "", phone: "", email: "" },
   });
-
-  // Toast
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -60,17 +56,11 @@ function MyProfile() {
             },
           });
         } else {
-          setToastType("danger");
-          setToastMessage(response.data.error || "Failed to fetch profile");
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 4000);
+          toast.error(response.data.error || "Failed to fetch profile");
         }
       } catch (err) {
         console.error("API Error:", err);
-        setToastType("danger");
-        setToastMessage("Failed to fetch profile from server");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 4000);
+        toast.error("Failed to fetch profile from server");
       }
     };
 
@@ -204,27 +194,6 @@ function MyProfile() {
         <div className="alert alert-info">
           <strong>Note:</strong> If you want to edit your profile, please
           contact to your communicator.
-        </div>
-
-        {/* Toast */}
-        <div className="toast-container position-fixed top-0 end-0 p-3">
-          <div
-            className={`toast align-items-center text-bg-${toastType} ${
-              showToast ? "show" : ""
-            }`}
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="d-flex">
-              <div className="toast-body">{toastMessage}</div>
-              <button
-                type="button"
-                className="btn-close btn-close-white me-2 m-auto"
-                onClick={() => setShowToast(false)}
-              ></button>
-            </div>
-          </div>
         </div>
       </div>
     </section>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
+import { toast } from "react-hot-toast";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5001/api";
@@ -35,17 +36,6 @@ function Support() {
   const [deleteType, setDeleteType] = useState(null); // "ticket" | "response"
   const [deleteTicketId, setDeleteTicketId] = useState(null);
   const [deleteResponseId, setDeleteResponseId] = useState(null);
-
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
-
-  const showToastMessage = (msg, type = "success") => {
-    setToastMessage(msg);
-    setToastType(type);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  };
 
   /* ================= FETCH SUPPORT ================= */
 
@@ -80,11 +70,11 @@ function Support() {
 
         setTickets(formatted);
       } else {
-        showToastMessage(res.data.error || "Failed to fetch tickets", "danger");
+        toast.error(res.data.error || "Failed to fetch tickets");
       }
     } catch (err) {
       console.error("Support fetch error:", err);
-      showToastMessage("Server error", "danger");
+      toast.error("Server error");
     }
   }, [phone, token]);
 
@@ -129,7 +119,7 @@ function Support() {
 
   const saveResponse = async () => {
     if (!responseText.trim()) {
-      showToastMessage("Response cannot be empty", "danger");
+      toast.error("Response cannot be empty");
       return;
     }
 
@@ -147,7 +137,7 @@ function Support() {
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
-        showToastMessage("Response added");
+        toast.success("Response added");
       } else {
         await axios.put(
           `${API_BASE_URL}/support/followup/${editResponseId}`,
@@ -158,7 +148,7 @@ function Support() {
           { headers: { Authorization: `Bearer ${token}` } },
         );
 
-        showToastMessage("Response updated");
+        toast.success("Response updated");
       }
 
       setModalType(null);
@@ -168,7 +158,7 @@ function Support() {
       fetchSupportTickets();
     } catch (err) {
       console.error("Save response error:", err);
-      showToastMessage("Failed to save response", "danger");
+      toast.error("Failed to save response");
     }
   };
 
@@ -192,7 +182,7 @@ function Support() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      showToastMessage("Deleted successfully", "warning");
+      toast.success("Deleted successfully");
 
       setTickets((prev) =>
         deleteType === "ticket"
@@ -211,7 +201,7 @@ function Support() {
       fetchSupportTickets();
     } catch (err) {
       console.error("Delete error:", err);
-      showToastMessage("Delete failed", "danger");
+      toast.error("Delete failed");
     } finally {
       setDeleteType(null);
       setDeleteTicketId(null);
@@ -650,25 +640,6 @@ function Support() {
             <div className="modal-backdrop fade show"></div>
           </>
         )}
-
-        {/* Toast */}
-        <div className="toast-container position-fixed top-0 end-0 p-3">
-          <div
-            className={`toast align-items-center text-bg-${toastType} ${showToast ? "show" : ""}`}
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="d-flex">
-              <div className="toast-body">{toastMessage}</div>
-              <button
-                type="button"
-                className="btn-close btn-close-white me-2 m-auto"
-                onClick={() => setShowToast(false)}
-              ></button>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import dayjs from "dayjs";
+import { toast } from "react-hot-toast";
 
 import {
   Chart as ChartJS,
@@ -32,10 +33,6 @@ const API_BASE_URL =
 
 function Dashboard() {
   const navigate = useNavigate();
-
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState("success");
 
   // Responsive bar thickness
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -84,17 +81,11 @@ function Dashboard() {
         if (res.data.success) {
           setProfile(res.data.profile);
         } else {
-          setToastType("danger");
-          setToastMessage("Failed to load profile");
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 4000);
+          toast.error("Failed to load profile");
         }
       } catch (err) {
         console.error("Profile fetch failed", err);
-        setToastType("danger");
-        setToastMessage("Server error while loading profile");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 4000);
+        toast.error("Server error while loading profile");
       }
     };
 
@@ -200,14 +191,11 @@ function Dashboard() {
         setMonthlyPayments(dailyArray);
       } catch (err) {
         console.error("Payments fetch failed", err);
-        setToastType("danger");
-        setToastMessage(
+        toast.error(
           err.response?.data?.error ||
             err.message ||
             "Server error while loading payments",
         );
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 4000);
       }
     };
 
@@ -231,17 +219,11 @@ function Dashboard() {
             resolved: res.data.resolvedCount,
           });
         } else {
-          setToastType("danger");
-          setToastMessage("Failed to fetch support requests");
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 4000);
+          toast.error("Failed to fetch support requests");
         }
       } catch (err) {
         console.error("Support fetch failed", err);
-        setToastType("danger");
-        setToastMessage("Server error while fetching support requests");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 4000);
+        toast.error("Server error while fetching support requests");
       }
     };
 
@@ -265,17 +247,10 @@ function Dashboard() {
           setLeadHistory(res.data.dailyStats || []);
           setLeadSummary(res.data.summary);
         } else {
-          setToastType("danger");
-          setToastMessage("Failed to fetch lead summary");
-          setShowToast(true);
-          setTimeout(() => setShowToast(false), 4000);
+          toast.error("Failed to fetch lead summary");
         }
       } catch (err) {
-        console.error("Lead summary fetch failed", err);
-        setToastType("danger");
-        setToastMessage("Server error while fetching lead summary");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 4000);
+        toast.error("Server error while fetching lead summary");
       }
     };
 
@@ -979,27 +954,6 @@ function Dashboard() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Toast */}
-      <div className="toast-container position-fixed top-0 end-0 p-3">
-        <div
-          className={`toast align-items-center text-bg-${toastType} ${
-            showToast ? "show" : ""
-          }`}
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div className="d-flex">
-            <div className="toast-body">{toastMessage}</div>
-            <button
-              type="button"
-              className="btn-close btn-close-white me-2 m-auto"
-              onClick={() => setShowToast(false)}
-            ></button>
           </div>
         </div>
       </div>
