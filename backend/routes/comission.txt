@@ -1,0 +1,8 @@
+// Restart
+SET @i := 0;
+
+UPDATE temporaryLeads
+SET id = (@i := @i + 1)
+ORDER BY id;
+
+ALTER TABLE temporaryLeads AUTO_INCREMENT = 11;
