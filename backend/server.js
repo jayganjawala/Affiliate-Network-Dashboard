@@ -37,6 +37,12 @@ db.query = util.promisify(db.query);
 app.use(cors())
 app.use(jsonMiddleware)
 
+// Debug middleware to log incoming requests
+app.use((req, res, next) => {
+    console.log(`Request: ${req.method} ${req.url}`);
+    next();
+});
+
 
 app.use('/api', sendOtp(db))
 app.use('/api', verifyOtp(db))
