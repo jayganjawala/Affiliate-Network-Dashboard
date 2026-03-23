@@ -75,8 +75,8 @@ const Login = ({ setAuth }) => {
         <div className="col-lg-6 d-flex align-items-center justify-content-center p-4 p-lg-5">
           <div className="w-100" style={{ maxWidth: "420px" }}>
             <div className="mb-5">
-              <h2 className="fw-bold text-dark mb-2">Equitypandit</h2>
-              <p className="text-muted">Task & Team Management</p>
+              <img src="JD.svg" className="img-fluid" alt="logo" />
+              {/* <p className="fw-semibold mt-3">Task & Team Management</p> */}
             </div>
 
             <h3 className="mb-2 fw-bold">Welcome back</h3>
