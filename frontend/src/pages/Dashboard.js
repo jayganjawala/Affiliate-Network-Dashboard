@@ -579,8 +579,8 @@ function Dashboard() {
   };
 
   return (
-    <section className="poppins-regular">
-      <div className="container py-2">
+    <section className="poppins-regular py-3">
+      <div className="container">
         <div className="row">
           <div className="col-12 col-lg-12 mt-2">
             <h4 className="fw-bold fs-3 mb-3">

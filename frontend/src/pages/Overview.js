@@ -104,8 +104,8 @@ function Overview() {
   };
 
   return (
-    <section className="poppins-regular">
-      <div className="container mt-3">
+    <section className="poppins-regular py-3">
+      <div className="container">
         {/* Back button */}
         <div className="row mb-3 g-3">
           <div className="col">
